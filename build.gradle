@@ -1,0 +1,86 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'org.springframework.boot' version '3.2.2'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.acid.core.web'
+archivesBaseName = 'common-module'
+version = '1.0.0.RELEASE'
+
+// Disable bootJar since this is a library module
+bootJar {
+    enabled = false
+}
+
+// Enable jar task for library publishing
+jar {
+    enabled = true
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.apache.logging.log4j:log4j-api:2.15.0'
+    implementation 'org.apache.logging.log4j:log4j-to-slf4j:2.15.0'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation('com.google.guava:guava:32.0.1-android')
+    implementation 'org.apache.commons:commons-lang3:3.10'
+    implementation 'org.apache.commons:commons-text:1.10.0'
+    implementation 'org.apache.commons:commons-pool2:2.8.0'
+    implementation 'commons-collections:commons-collections:3.2.2'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.11.2'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.2'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+}
+repositories {
+    mavenCentral()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            // Optional: customize artifact details
+            groupId = project.group
+            artifactId = project.name
+            version = project.version
+        }
+    }
+    repositories {
+        // Keep existing GitHub Packages repository
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/jithumajinu/common-module")
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
+
+        // Add local Nexus repository
+        maven {
+            name = "LocalNexus"
+            url = uri("http://192.168.3.9:8081/repository/maven-releases/")
+         // url = uri("http://localhost:8081/repository/maven-releases/")
+            allowInsecureProtocol = true
+            credentials {
+                username = "admin"
+                password = "****pwd****"
+            }
+        }
+    }
+}
