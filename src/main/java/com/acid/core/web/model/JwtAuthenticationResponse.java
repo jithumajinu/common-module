@@ -15,6 +15,7 @@ public class JwtAuthenticationResponse implements Serializable {
 
     private static final long serialVersionUID = 1200160788658364366L;
     private String accessToken;
+    private String refreshToken;
     private String tokenType;
     private String name;
     private String email;
